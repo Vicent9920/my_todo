@@ -14,7 +14,7 @@ description: An API from wanandroid.com and an APP from flutter.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.2.2 <3.0.0"
 
 dependencies:
   flutter:
@@ -27,7 +27,14 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
+  #网络
+  dio: ^2.1.6
+  #Cookie管理
+  cookie_jar: ^1.0.0
+  #获取存储路径
+  path_provider: ^1.1.0
+  #本地存储
+  shared_preferences: ^0.4.3
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec

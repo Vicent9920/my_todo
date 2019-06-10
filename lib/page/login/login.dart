@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:my_todo/net/request.dart';
+import 'package:my_todo/page/login/widget/psd_field.dart';
+import 'package:my_todo/page/login/widget/user_name_field.dart';
 import 'package:my_todo/util/util.dart';
-import 'package:my_todo/widget/psd_field.dart';
-import 'package:my_todo/widget/user_name_field.dart';
+
+import 'main_page.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -123,10 +126,14 @@ class _LoginState extends State<Login> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20.0)),
                     onPressed: () => {
-                      if (_userNameValid && _psdValid)
-                        {
-                          // TODO 登录
-                        }
+                    Navigator.pushReplacement(
+                    context, MaterialPageRoute(builder: (context) => MainPage()))
+//                      if (_userNameValid && _psdValid){
+//                          Request().login(_userName, _psd).then((result) {
+//                            Navigator.pushReplacement(
+//                                context, MaterialPageRoute(builder: (context) => MainPage()));
+//                          })
+//                        }
                     }),
               ),
               SizedBox(
