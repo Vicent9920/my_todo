@@ -25,7 +25,7 @@ class Api {
   static String subscriptionsHis = 'wxarticle/list/';
 
   //登录
-  static String login = 'user/page.login';
+  static String login = 'user/login';
 
   //注册
   static String register = 'user/register';

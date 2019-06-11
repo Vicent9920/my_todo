@@ -12,15 +12,17 @@ class RequestImpl extends Request {
   Dio _dio;
 
   RequestImpl() : super.internal() {
-    _dio = Dio(BaseOptions(
+    var option = BaseOptions(
         baseUrl: Api.baseUrl,
         connectTimeout: 30 * 1000,
-        receiveTimeout: 30 * 1000));
-    _dio.interceptors.add(InterceptorsWrapper(
-      onResponse: onSuccess,
-      onError: onError,
-    ));
-    _dio.interceptors.add(CookieManager(CookieJar()));
+        receiveTimeout: 30 * 1000);
+    _dio = Dio(option);
+    _dio.interceptors..add(CookieManager(CookieJar()))..add(LogInterceptor())..add(InterceptorsWrapper(onError: onError,));
+  }
+
+  onSend(BaseOptions options) {
+
+    return options;
   }
 
   onSuccess(Response response) {
