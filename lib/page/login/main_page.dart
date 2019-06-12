@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_todo/entity/matter_data_entity.dart';
 import 'package:my_todo/page/login/widget/custom_drawer.dart';
 
 class MainPage extends StatefulWidget {
@@ -8,16 +9,27 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   var _isDone = false;
+  List<MatterData> _list =  List();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(icon: Icon(Icons.dashboard), onPressed: () {}),
         title: Text("${(_isDone) ? '完成' : '待办'}清单"),
         centerTitle: true,
-        leading: IconButton(icon: Icon(Icons.storage), onPressed: () {}),
+        actions: <Widget>[ //导航栏右侧菜单
+          IconButton(icon: Icon(Icons.date_range), onPressed: () {}),
+        ],
+
       ),
       drawer: CustomDrawer(),
+      body: IndexedStack(
+        children: <Widget>[
+
+        ],
+        index: (_isDone) ?1:0,
+      ),
       bottomNavigationBar: BottomAppBar(
         color: Colors.white,
         shape: CircularNotchedRectangle(),
