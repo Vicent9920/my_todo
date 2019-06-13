@@ -47,7 +47,7 @@ class Api {
       'https://raw.githubusercontent.com/sunxiaolei/flutter-wan/master/update.conf';
 
   //TODO列表
-  static String todoList = 'lg/todo/v2/list/';
+  static String todoList = 'lg/todo/v2/list/1/json?status=0';
 
   //更新TODO状态
   static String updateTodoStatus = 'lg/todo/done/';

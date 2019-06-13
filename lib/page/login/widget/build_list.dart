@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_todo/entity/matter_data_entity.dart';
+import 'package:my_todo/page/login/widget/day_items.dart';
 
 class BuildList {
   final BuildContext context;
@@ -16,36 +17,64 @@ class BuildList {
       );
     }
     List<Map<String, List<MatterData>>> listData = List();
-    List<Map<String, bool>> dateList = List();
 
     for (var i in list) {
-      for (Map<String, bool> m in dateList) {
+      bool isContains = false;
+      for (Map<String, List<MatterData>> m in listData) {
         if (m.keys.contains(i.dateStr)) {
-          bool isEnd = false;
-          for (var matters in listData) {
-            if (matters.keys.contains(i.dateStr)) {
-              matters[i.dateStr].add(i);
-              isEnd = true;
-              break;
-            }
-          }
-          if (isEnd) break;
+          m[i.dateStr].add(i);
+          isContains = true;
+          break;
         }
       }
-      var mapDate = Map();
-      mapDate[i.dateStr] = false;
-      dateList.add(mapDate);
-      var ms = List<MatterData>();
-      ms.add(i);
-      var mapData = Map();
-      mapData[i.dateStr] = ms;
-      listData.add(mapData);
-
+      if (!isContains) {
+        var ms = List<MatterData>();
+        ms.add(i);
+        var mapData = Map();
+        mapData[i.dateStr] = ms;
+        listData.add(mapData);
+      }
     }
 
     return ListView.builder(itemBuilder: (context, index) {
-      final total = dateList.length * 2;
-      // TODO 以日期为Item绘制列表
+      final total = listData.length * 2;
+      if (index <= total) {
+        if (index.isOdd) return Divider();
+        final i = index ~/ 2;
+        if (i < listData.length) {
+          Map<String, List<MatterData>> map = listData[i];
+          return DayItem(map.values.toList()[0], map.keys.toList()[0]);
+        }
+      }
     });
+  }
+
+  Widget getTodoDay(Map<String, List<MatterData>> days) {
+    bool isExpand = false;
+    return Column(
+      children: <Widget>[
+        Stack(
+          alignment: Alignment.center,
+          children: <Widget>[
+            Positioned(
+              left: 12.0,
+              child: Text(days.keys.toList()[0]),
+            ),
+            Positioned(
+              right: 14.0,
+              child: IconButton(
+                icon: Icon(
+                  Icons.arrow_drop_up,
+                  color: Colors.black54,
+                ),
+                onPressed: () {
+                  isExpand = !isExpand;
+                },
+              ),
+            )
+          ],
+        )
+      ],
+    );
   }
 }
