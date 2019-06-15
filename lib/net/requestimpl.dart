@@ -1,13 +1,16 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:my_todo/entity/base_dto.dart';
 import 'package:my_todo/entity/login_dto.dart';
 import 'package:my_todo/entity/matter_data_entity.dart';
+import 'package:my_todo/entity/todo_group_entity.dart';
 import 'package:my_todo/net/api.dart';
 import 'package:my_todo/net/request.dart';
 import 'package:my_todo/util/sp_store_util.dart';
+import 'package:path_provider/path_provider.dart';
 
 class RequestImpl extends Request {
   Dio _dio;
@@ -19,16 +22,14 @@ class RequestImpl extends Request {
         receiveTimeout: 30 * 1000);
     _dio = Dio(option);
     _dio.interceptors
-      ..add(CookieManager(CookieJar()))
       ..add(LogInterceptor())
       ..add(InterceptorsWrapper(
         onError: onError,
       ));
+    _setPersistCookieJar();
   }
 
-  onSend(BaseOptions options) {
-    return options;
-  }
+
 
   onSuccess(Response response) {
     Map<String, dynamic> resJson;
@@ -43,6 +44,10 @@ class RequestImpl extends Request {
     return base;
   }
 
+  _setPersistCookieJar()async{
+    Directory dir = await getApplicationDocumentsDirectory();
+    _dio.interceptors..add(CookieManager(PersistCookieJar(dir: dir.path)));
+  }
   onError(DioError error) {
     switch (error.type) {
       case DioErrorType.CONNECT_TIMEOUT:
@@ -81,8 +86,6 @@ class RequestImpl extends Request {
         data: FormData.from({'username': username, 'password': password}));
     Map<String, dynamic> resJson;
     if (response.data is String) {
-      // TODO 待删除 在业务代码中序列化后保存
-      SpUtils.saveLoginDTO(str: response.data);
       resJson = json.decode(response.data);
     } else if (response.data is Map<String, dynamic>) {
       resJson = response.data;
@@ -106,10 +109,6 @@ class RequestImpl extends Request {
       String username, String password, String repassword) async {
     Response response = await _dio.post(Api.register,
         data: FormData.from({'username': username, 'password': password}));
-    if (response.data is String) {
-      // TODO 待删除 在业务代码中序列化后保存
-      SpUtils.saveLoginDTO(str: response.data);
-    }
     return LoginDTO.fromJson(_handleRes(response));
   }
 
@@ -121,7 +120,7 @@ class RequestImpl extends Request {
    * @Param page 排序 1:完成日期顺序；2.完成日期逆序；3.创建日期顺序；4.创建日期逆序(默认)；
    */
   @override
-  Future<List<MatterData>> getTodoList(
+  Future<TodoGroupEntity> getTodoList(
       bool isFinish, int type, int page, int orderby) async {
     var map = Map<String, dynamic>();
     map["state"] = (isFinish) ? 1 : 0;
@@ -131,10 +130,6 @@ class RequestImpl extends Request {
     map["orderby"] = orderby;
     Response response =
         await _dio.get("lg/todo/v2/list/$page/json", queryParameters: map);
-    List<MatterData> data = List<MatterData>();
-    _handleRes(response).forEach((v) {
-      data.add(MatterData.fromJson(v));
-    });
-    return data;
+    return TodoGroupEntity.fromJson(_handleRes(response));
   }
 }

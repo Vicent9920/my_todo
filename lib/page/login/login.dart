@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:my_todo/entity/login_dto.dart';
 import 'package:my_todo/net/request.dart';
 import 'package:my_todo/page/login/widget/psd_field.dart';
 import 'package:my_todo/page/login/widget/user_name_field.dart';
+import 'package:my_todo/util/sp_store_util.dart';
 import 'package:my_todo/util/util.dart';
 
 import 'main_page.dart';
@@ -130,10 +132,17 @@ class _LoginState extends State<Login> {
                         {
                           // _userName:weixing9920@163.com  _psd:W904993060X
                           Request().login(_userName, _psd).then((result) {
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => MainPage()));
+                            if (result.errorCode != -1) {
+                              LoginDTO entity = LoginDTO.fromJson(result.data);
+                              SpUtils.setString(
+                                  SpUtils.USER_NAME, entity.username);
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => MainPage()));
+                            } else {
+                              // TODO 注册
+                            }
                           }).catchError((e) {
                             print("登录异常：${e.message}");
                             //登录异常：网络错误：405

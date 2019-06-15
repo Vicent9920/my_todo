@@ -1,6 +1,7 @@
 import 'package:my_todo/entity/base_dto.dart';
 import 'package:my_todo/entity/login_dto.dart';
 import 'package:my_todo/entity/matter_data_entity.dart';
+import 'package:my_todo/entity/todo_group_entity.dart';
 import 'package:my_todo/net/requestimpl.dart';
 
 abstract class Request {
@@ -26,6 +27,6 @@ abstract class Request {
   Future<Null> logout();
 
   // 获取计划清单
-  Future<List<MatterData>> getTodoList(
+  Future<TodoGroupEntity> getTodoList(
       bool isFinish, int type, int page, int orderby);
 }
