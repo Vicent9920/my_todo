@@ -2,10 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:my_todo/net/request.dart';
+import 'package:my_todo/page/home/main_page.dart';
+import 'package:my_todo/page/login/login.dart';
 import 'package:my_todo/util/sp_store_util.dart';
-
-import 'login.dart';
-import 'main_page.dart';
 
 class SplashPage extends StatefulWidget {
   @override
@@ -16,12 +15,13 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPage extends State<SplashPage> {
   Timer timer;
+  var login = '今日事今日毕！';
 
   @override
   void initState() {
     super.initState();
     Request();
-    timer = new Timer(const Duration(milliseconds: 3000), () {
+    timer = new Timer(const Duration(milliseconds: 5000), () {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => Login()));
       SpUtils.getString(SpUtils.USER_NAME).then((entity) {
@@ -48,8 +48,20 @@ class _SplashPage extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
-    return new Image(
-        image: AssetImage('res/images/splash.jpg'), fit: BoxFit.fill);
-    ;
+    return Container(
+      decoration: BoxDecoration(
+          image: DecorationImage(image: AssetImage('res/images/splash.jpg'))),
+      child: Center(
+        child: Text(
+          login,
+          style: TextStyle(
+            fontSize: 22,
+            color: Colors.green,
+            decoration: TextDecoration.none,
+            fontFamily: "Shadows",
+          ),
+        ),
+      ),
+    );
   }
 }

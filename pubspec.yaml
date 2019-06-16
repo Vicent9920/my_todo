@@ -35,7 +35,8 @@ dev_dependencies:
   path_provider: ^1.1.0
   #本地存储
   shared_preferences: ^0.4.3
-
+  # 进度条
+  flutter_spinkit: "^3.1.0"
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
 
@@ -57,6 +58,9 @@ flutter:
     - res/images/icon_password.png
     - res/images/icon_username.png
     - res/images/icon_logo.png
+    - res/images/ic_finished.png
+    - res/images/ic_return.png
+    - res/images/ic_screening.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 
@@ -68,10 +72,11 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
+  fonts:
+    - family: Shadows
+      fonts:
+       - asset: res/fonts/ShadowsIntoLight.ttf
+
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro

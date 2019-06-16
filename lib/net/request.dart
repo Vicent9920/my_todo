@@ -29,4 +29,9 @@ abstract class Request {
   // 获取计划清单
   Future<TodoGroupEntity> getTodoList(
       bool isFinish, int type, int page, int orderby);
+
+  //删除计划
+  Future<Null> deleteMatter(int id);
+
+  Future<MatterData> updateMatterStatus(int id,bool isFinished);
 }

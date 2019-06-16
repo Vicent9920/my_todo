@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:my_todo/entity/matter_data_entity.dart';
-import 'package:my_todo/page/login/widget/day_items.dart';
+import 'package:my_todo/page/widget/day_items.dart';
 
 class BuildList {
   final BuildContext context;
 
   BuildList(this.context);
 
-  Widget buildTodoList(List<MatterData> list) {
+  Widget buildTodoList(List<MatterData> list,bool isFinish) {
     if (list.length == 0) {
       return Center(
         child: Text(
@@ -28,13 +28,13 @@ class BuildList {
       }
     }
     return ListView.builder(
+      shrinkWrap: true,
+        physics: BouncingScrollPhysics(),
         itemBuilder: (context, index) {
-          final total = days.length * 2;
+          final total = days.length;
           if (index <= total) {
-            if (index.isOdd) return Divider();
-            final i = index ~/ 2;
-            if (i < days.length) {
-            return DayItem(days.values.toList()[i], days.keys.toList()[i]);
+            if (index < days.length) {
+            return DayItem(days.values.toList()[index], days.keys.toList()[index],isFinish);
             }
           }
         });

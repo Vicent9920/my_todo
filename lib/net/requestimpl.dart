@@ -9,7 +9,6 @@ import 'package:my_todo/entity/matter_data_entity.dart';
 import 'package:my_todo/entity/todo_group_entity.dart';
 import 'package:my_todo/net/api.dart';
 import 'package:my_todo/net/request.dart';
-import 'package:my_todo/util/sp_store_util.dart';
 import 'package:path_provider/path_provider.dart';
 
 class RequestImpl extends Request {
@@ -29,8 +28,6 @@ class RequestImpl extends Request {
     _setPersistCookieJar();
   }
 
-
-
   onSuccess(Response response) {
     Map<String, dynamic> resJson;
     if (response.data is String) {
@@ -44,10 +41,11 @@ class RequestImpl extends Request {
     return base;
   }
 
-  _setPersistCookieJar()async{
+  _setPersistCookieJar() async {
     Directory dir = await getApplicationDocumentsDirectory();
     _dio.interceptors..add(CookieManager(PersistCookieJar(dir: dir.path)));
   }
+
   onError(DioError error) {
     switch (error.type) {
       case DioErrorType.CONNECT_TIMEOUT:
@@ -132,4 +130,20 @@ class RequestImpl extends Request {
         await _dio.get("lg/todo/v2/list/$page/json", queryParameters: map);
     return TodoGroupEntity.fromJson(_handleRes(response));
   }
+
+  @override
+  Future<Null> deleteMatter(int id) async {
+    Response response =
+    await _dio.post('lg/todo/delete/${id}/json');
+    return _handleRes(response);
+  }
+
+  @override
+  Future<MatterData> updateMatterStatus(int id, bool isFinished) async{
+    Response response =
+        await _dio.post('lg/todo/delete/${id}/json',data: {'status':(isFinished)?1:0});
+    return _handleRes(response);
+  }
+
+
 }
