@@ -1,10 +1,9 @@
-import 'dart:convert';
-
-import 'package:my_todo/entity/login_dto.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class SpUtils{
+class SpUtils {
+  // ignore: non_constant_identifier_names
   static String USER_NAME = "userName";
+  static String CURRENT_INDEX = "current_index";
 
   static Future<bool> setBool(String key, bool value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

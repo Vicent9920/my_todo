@@ -113,7 +113,7 @@ class RequestImpl extends Request {
   /**
    * 获取计划清单
    * @Param isFinish 是否已完成
-   * @Param type 清单类型：工作1；生活2；娱乐3；所有4；
+   * @Param type 清单类型：工作1；生活2；娱乐3；所有0；
    * @Param page 页码 从1开始
    * @Param page 排序 1:完成日期顺序；2.完成日期逆序；3.创建日期顺序；4.创建日期逆序(默认)；
    */
@@ -122,7 +122,7 @@ class RequestImpl extends Request {
       bool isFinish, int type, int page, int orderby) async {
     var map = Map<String, dynamic>();
     map["state"] = (isFinish) ? 1 : 0;
-    if (type != 4) {
+    if (type != 0) {
       map["type"] = type;
     }
     map["orderby"] = orderby;

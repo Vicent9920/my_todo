@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:my_todo/entity/matter_data_entity.dart';
 import 'package:my_todo/entity/todo_group_entity.dart';
 import 'package:my_todo/net/request.dart';
 import 'package:my_todo/page/widget/build_list.dart';
 import 'package:my_todo/page/widget/custom_drawer.dart';
 import 'package:my_todo/page/widget/loading.dart';
+import 'package:my_todo/page/widget/toast.dart';
+import 'package:my_todo/util/sp_store_util.dart';
+
+typedef void ItemOnPressed();
 
 class MainPage extends StatefulWidget {
   @override
@@ -16,11 +21,13 @@ class _MainPageState extends State<MainPage> {
   List<MatterData> _list = List();
   var _themeColor = [Colors.orange, Colors.green];
   int status = 0;
+  int _currentType = 0;
   TodoGroupEntity _todoGroup;
 
   @override
   void initState() {
     _refresh();
+
     super.initState();
   }
 
@@ -36,11 +43,45 @@ class _MainPageState extends State<MainPage> {
           GestureDetector(
             child: Container(
               margin: EdgeInsets.only(right: 14.0),
-              child: Image.asset('res/images/ic_screening.png',width: 24,height: 24,),
+              child: Image.asset(
+                'res/images/ic_screening.png',
+                width: 24,
+                height: 24,
+              ),
             ),
-
-            onTap: (){
-
+            onTap: () {
+              showCupertinoModalPopup(context: context, builder: (context){
+                return CupertinoActionSheet(
+                  title: Text('请选择计划类型',style: TextStyle(fontSize:20,color: Colors.black),),
+                  cancelButton: CupertinoActionSheetAction(
+                    child: Text('取消',style: TextStyle(color: Colors.red),),
+                    onPressed: (){},
+                  ),
+                  actions: <Widget>[
+                    CupertinoActionSheetAction(
+                      child: Text('工作'),
+                      onPressed: (){_onItemPress(1);},
+                    ),
+                    CupertinoActionSheetAction(
+                      child: Text('生活'),
+                      onPressed: (){_onItemPress(2);},
+                    ),
+                    CupertinoActionSheetAction(
+                      child: Text('娱乐'),
+                      onPressed: (){_onItemPress(3);},
+                    ),
+                    CupertinoActionSheetAction(
+                      child: Text('全部'),
+                      onPressed: (){_onItemPress(0);},
+                    )
+                  ],
+                );
+              });
+//              showModalBottomSheet(
+//                  context: context,
+//                  builder: (BuildContext context) {
+//                    return _buildBottomSheet(context);
+//                  });
             },
           )
         ],
@@ -79,11 +120,10 @@ class _MainPageState extends State<MainPage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
-        backgroundColor: (_isDone) ? _themeColor[0] : _themeColor[1],
+          backgroundColor: (_isDone) ? _themeColor[0] : _themeColor[1],
           //悬浮按钮
           child: Icon(Icons.add),
           onPressed: _onAdd),
-
     );
   }
 
@@ -97,19 +137,141 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
-
   Widget _buildBody() {
     switch (status) {
       case 0:
         return Loading(_isDone);
       case 1:
         return BuildList(context).buildTodoList(_list, _isDone);
-
     }
   }
 
+  Widget _buildBottomSheet(BuildContext context) {
+    var deviceSize = MediaQuery.of(context).size;
+    return Container(
+      color: (_isDone) ? _themeColor[0] : _themeColor[1],
+      height: deviceSize.height / 2,
+      child: ListView(
+        children: <Widget>[
+          Container(
+            padding: EdgeInsets.only(left: 14.0, right: 14.0),
+            child: ClipRRect(
+                borderRadius: BorderRadius.circular(8.0),
+                child: Container(
+                  color: Colors.white,
+                  child: Column(
+                    children: <Widget>[
+                      SizedBox(
+                        height: 8,
+                      ),
+                      _item('工作', () {
+                        _currentType = 1;
+                        SpUtils.setInt(SpUtils.CURRENT_INDEX, _currentType)
+                            .then((result) {
+                          if (result) {
+                            Toast.toast(context, "修改成功");
+                          }
+                        });
+                        Navigator.of(context).pop();
+                      }),
+                      Divider(),
+                      _item('生活', () {
+                        _currentType = 2;
+                        SpUtils.setInt(SpUtils.CURRENT_INDEX, _currentType)
+                            .then((result) {
+                          if (result) {
+                            Toast.toast(context, "修改成功");
+                          }
+                        });
+                        Navigator.of(context).pop();
+                      }),
+                      Divider(),
+                      _item('娱乐', () {
+                        _currentType = 3;
+                        SpUtils.setInt(SpUtils.CURRENT_INDEX, _currentType)
+                            .then((result) {
+                          if (result) {
+                            Toast.toast(context, "修改成功");
+                          }
+                        });
+                        Navigator.of(context).pop();
+                      }),
+                      Divider(),
+                      _item('全部', () {
+                        _currentType = 0;
+                        SpUtils.setInt(SpUtils.CURRENT_INDEX, _currentType)
+                            .then((result) {
+                          if (result) {
+                            Toast.toast(context, "修改成功");
+                          }
+                        });
+                        Navigator.of(context).pop();
+                      }),
+                      SizedBox(
+                        height: 8,
+                      ),
+                    ],
+                  ),
+                )),
+          ),
+          SizedBox(
+            height: 6,
+          ),
+          Padding(
+            padding: EdgeInsets.only(left: 14.0, right: 14.0),
+            child: FlatButton(
+              color: Colors.white,
+              child: Text(
+                "取消",
+                style: TextStyle(color: Colors.red),
+              ),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0)),
+              onPressed: () {},
+            ),
+          ),
+          SizedBox(
+            height: 6,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _item(String text, ItemOnPressed itemPressed) {
+    return FlatButton(
+      color: Colors.white,
+      highlightColor: Colors.white,
+      child: Text(
+        text,
+        style: TextStyle(
+          color: (_isDone) ? _themeColor[0] : _themeColor[1],
+        ),
+      ),
+      onPressed: () {
+        itemPressed();
+      },
+    );
+  }
+
+  void _onItemPress(int type){
+    _currentType = type;
+    SpUtils.setInt(SpUtils.CURRENT_INDEX, _currentType)
+        .then((result) {
+      if (result) {
+        Toast.toast(context, "修改成功");
+      }
+    });
+    Navigator.of(context).pop();
+  }
+
+//    Request().getTodoList(_isDone, _currentType, 1, 4).
   _refresh() async {
-    Request().getTodoList(_isDone, 4, 1, 4).then((entity) {
+    SpUtils.getInt(SpUtils.CURRENT_INDEX).then((type) {
+      print(type);
+      _currentType = type;
+      return Request().getTodoList(_isDone, _currentType, 1, 4);
+    }).then((entity) {
       print(entity.total);
       _list.clear();
       setState(() {

@@ -75,6 +75,7 @@ flutter:
   fonts:
     - family: Shadows
       fonts:
+       - asset: res/fonts/custom_font_pf.ttf
        - asset: res/fonts/ShadowsIntoLight.ttf
 
   #       - asset: fonts/Schyler-Italic.ttf
