@@ -49,8 +49,8 @@ class _SplashPage extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-          image: DecorationImage(image: AssetImage('res/images/splash.jpg'))),
+//      decoration: BoxDecoration(
+//          image: DecorationImage(image: AssetImage('res/images/splash.jpg'))),
       child: Center(
         child: Text(
           login,

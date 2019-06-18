@@ -7,16 +7,7 @@ class BuildList {
 
   BuildList(this.context);
 
-  Widget buildTodoList(List<MatterData> list,bool isFinish) {
-    if (list.length == 0) {
-      return Center(
-        child: Text(
-          "目前暂无数据",
-          style: TextStyle(fontSize: 18),
-        ),
-      );
-    }
-
+  Widget buildTodoList(List<MatterData> list, bool isFinish) {
     Map<String, List<MatterData>> days = Map();
     for (var i in list) {
       if (days.keys.contains(i.dateStr)) {
@@ -28,17 +19,14 @@ class BuildList {
       }
     }
     return ListView.builder(
-      shrinkWrap: true,
+//        shrinkWrap: true,
         physics: BouncingScrollPhysics(),
+        itemCount: days.length,
         itemBuilder: (context, index) {
-          final total = days.length;
-          if (index <= total) {
-            if (index < days.length) {
-            return DayItem(days.values.toList()[index], days.keys.toList()[index],isFinish);
-            }
+          if (index < days.length) {
+            return DayItem(days.values.toList()[index],
+                days.keys.toList()[index], isFinish);
           }
         });
-
-
   }
 }

@@ -5,7 +5,9 @@ import 'package:my_todo/entity/todo_group_entity.dart';
 import 'package:my_todo/net/request.dart';
 import 'package:my_todo/page/widget/build_list.dart';
 import 'package:my_todo/page/widget/custom_drawer.dart';
+import 'package:my_todo/page/widget/day_items.dart';
 import 'package:my_todo/page/widget/loading.dart';
+import 'package:my_todo/page/widget/pullrefresh/pullrefresh.dart';
 import 'package:my_todo/page/widget/toast.dart';
 import 'package:my_todo/util/sp_store_util.dart';
 
@@ -17,12 +19,22 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  // 是否执行
   var _isDone = false;
+
+  // 计划列表
   List<MatterData> _list = List();
+
+  // 主题颜色
   var _themeColor = [Colors.orange, Colors.green];
+
+  // 页面状态 0 加载  1 数据  2 空页面 3 异常
   int status = 0;
+
+  // 当前的计划类型 0 全部 1 工作  2 生活  3 娱乐
   int _currentType = 0;
-  TodoGroupEntity _todoGroup;
+  int _currentPage = 1;
+  bool _loadMoreEnable = true;
 
   @override
   void initState() {
@@ -50,33 +62,49 @@ class _MainPageState extends State<MainPage> {
               ),
             ),
             onTap: () {
-              showCupertinoModalPopup(context: context, builder: (context){
-                return CupertinoActionSheet(
-                  title: Text('请选择计划类型',style: TextStyle(fontSize:20,color: Colors.black),),
-                  cancelButton: CupertinoActionSheetAction(
-                    child: Text('取消',style: TextStyle(color: Colors.red),),
-                    onPressed: (){},
-                  ),
-                  actions: <Widget>[
-                    CupertinoActionSheetAction(
-                      child: Text('工作'),
-                      onPressed: (){_onItemPress(1);},
-                    ),
-                    CupertinoActionSheetAction(
-                      child: Text('生活'),
-                      onPressed: (){_onItemPress(2);},
-                    ),
-                    CupertinoActionSheetAction(
-                      child: Text('娱乐'),
-                      onPressed: (){_onItemPress(3);},
-                    ),
-                    CupertinoActionSheetAction(
-                      child: Text('全部'),
-                      onPressed: (){_onItemPress(0);},
-                    )
-                  ],
-                );
-              });
+              showCupertinoModalPopup(
+                  context: context,
+                  builder: (context) {
+                    return CupertinoActionSheet(
+                      title: Text(
+                        '请选择计划类型',
+                        style: TextStyle(fontSize: 20, color: Colors.black),
+                      ),
+                      cancelButton: CupertinoActionSheetAction(
+                        child: Text(
+                          '取消',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                        onPressed: () {},
+                      ),
+                      actions: <Widget>[
+                        CupertinoActionSheetAction(
+                          child: Text('工作'),
+                          onPressed: () {
+                            _onItemPress(1);
+                          },
+                        ),
+                        CupertinoActionSheetAction(
+                          child: Text('生活'),
+                          onPressed: () {
+                            _onItemPress(2);
+                          },
+                        ),
+                        CupertinoActionSheetAction(
+                          child: Text('娱乐'),
+                          onPressed: () {
+                            _onItemPress(3);
+                          },
+                        ),
+                        CupertinoActionSheetAction(
+                          child: Text('全部'),
+                          onPressed: () {
+                            _onItemPress(0);
+                          },
+                        )
+                      ],
+                    );
+                  });
 //              showModalBottomSheet(
 //                  context: context,
 //                  builder: (BuildContext context) {
@@ -137,12 +165,25 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
+  // ignore: missing_return
   Widget _buildBody() {
     switch (status) {
       case 0:
         return Loading(_isDone);
       case 1:
-        return BuildList(context).buildTodoList(_list, _isDone);
+        return PullRefresh(
+          onRefresh: _refresh,
+          onLoadmore: _loadMore,
+          scrollView: BuildList(context).buildTodoList(_list, _isDone),
+        );
+//        return BuildList(context).buildTodoList(_list, _isDone);
+      case 2:
+        return Center(
+          child: Text(
+            "目前暂无数据",
+            style: TextStyle(fontSize: 18),
+          ),
+        );
     }
   }
 
@@ -254,30 +295,43 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  void _onItemPress(int type){
+  void _onItemPress(int type) {
     _currentType = type;
-    SpUtils.setInt(SpUtils.CURRENT_INDEX, _currentType)
-        .then((result) {
+    SpUtils.setInt(SpUtils.CURRENT_INDEX, _currentType).then((result) {
       if (result) {
         Toast.toast(context, "修改成功");
+        setState(() {
+          status = 0;
+          _refresh();
+        });
       }
     });
     Navigator.of(context).pop();
   }
 
-//    Request().getTodoList(_isDone, _currentType, 1, 4).
   _refresh() async {
     SpUtils.getInt(SpUtils.CURRENT_INDEX).then((type) {
-      print(type);
       _currentType = type;
-      return Request().getTodoList(_isDone, _currentType, 1, 4);
+      return Request().getTodoList(_isDone, _currentType, _currentPage, 4);
     }).then((entity) {
-      print(entity.total);
       _list.clear();
+      _list.addAll(entity.datas);
+      status = (_list.length > 0) ? 1 : 2;
       setState(() {
-        status = 1;
-        _todoGroup = entity;
-        _list.addAll(entity.datas);
+        _loadMoreEnable = entity.pageCount != _currentPage;
+      });
+    });
+  }
+
+  _loadMore() async {
+    _currentPage++;
+    Request()
+        .getTodoList(_isDone, _currentType, _currentPage, 4)
+        .then((entity) {
+      _list.addAll(entity.datas);
+      status = (_list.length > 0) ? 1 : 2;
+      setState(() {
+        _loadMoreEnable = entity.pageCount != _currentPage;
       });
     });
   }

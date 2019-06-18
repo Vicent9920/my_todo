@@ -121,11 +121,13 @@ class RequestImpl extends Request {
   Future<TodoGroupEntity> getTodoList(
       bool isFinish, int type, int page, int orderby) async {
     var map = Map<String, dynamic>();
-    map["state"] = (isFinish) ? 1 : 0;
+    map["status"] = (isFinish) ? 1 : 0;
     if (type != 0) {
       map["type"] = type;
     }
-    map["orderby"] = orderby;
+    if(orderby != 4){
+      map["orderby"] = orderby;
+    }
     Response response =
         await _dio.get("lg/todo/v2/list/$page/json", queryParameters: map);
     return TodoGroupEntity.fromJson(_handleRes(response));
