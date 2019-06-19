@@ -1,13 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:my_todo/entity/matter_data_entity.dart';
-import 'package:my_todo/entity/todo_group_entity.dart';
 import 'package:my_todo/net/request.dart';
 import 'package:my_todo/page/widget/build_list.dart';
 import 'package:my_todo/page/widget/custom_drawer.dart';
-import 'package:my_todo/page/widget/day_items.dart';
 import 'package:my_todo/page/widget/loading.dart';
-import 'package:my_todo/page/widget/pullrefresh/pullrefresh.dart';
+import 'package:my_todo/page/widget/pullrefresh/mulite_page_fresh.dart';
 import 'package:my_todo/page/widget/toast.dart';
 import 'package:my_todo/util/sp_store_util.dart';
 
@@ -160,6 +158,7 @@ class _MainPageState extends State<MainPage> {
       setState(() {
         _isDone = !current;
         status = 0;
+        _currentPage = 1;
       });
       _refresh();
     }
@@ -171,12 +170,8 @@ class _MainPageState extends State<MainPage> {
       case 0:
         return Loading(_isDone);
       case 1:
-        return PullRefresh(
-          onRefresh: _refresh,
-          onLoadmore: _loadMore,
-          scrollView: BuildList(context).buildTodoList(_list, _isDone),
-        );
-//        return BuildList(context).buildTodoList(_list, _isDone);
+        return MultiPageFresh(
+            _loadMore, BuildList(context).buildTodoList(_list, _isDone));
       case 2:
         return Center(
           child: Text(
@@ -324,16 +319,17 @@ class _MainPageState extends State<MainPage> {
   }
 
   _loadMore() async {
-    _currentPage++;
-    Request()
-        .getTodoList(_isDone, _currentType, _currentPage, 4)
-        .then((entity) {
-      _list.addAll(entity.datas);
-      status = (_list.length > 0) ? 1 : 2;
-      setState(() {
-        _loadMoreEnable = entity.pageCount != _currentPage;
+    if (_loadMoreEnable) {
+      _currentPage++;
+      Request()
+          .getTodoList(_isDone, _currentType, _currentPage, 4)
+          .then((entity) {
+        setState(() {
+          _list.addAll(entity.datas);
+          _loadMoreEnable = entity.pageCount != _currentPage;
+        });
       });
-    });
+    }
   }
 
   void _onAdd() {}
