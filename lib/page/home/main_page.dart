@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_todo/entity/matter_data_entity.dart';
 import 'package:my_todo/net/request.dart';
+import 'package:my_todo/page/plan/plan.dart';
 import 'package:my_todo/page/widget/build_list.dart';
 import 'package:my_todo/page/widget/custom_drawer.dart';
 import 'package:my_todo/page/widget/loading.dart';
@@ -103,11 +104,6 @@ class _MainPageState extends State<MainPage> {
                       ],
                     );
                   });
-//              showModalBottomSheet(
-//                  context: context,
-//                  builder: (BuildContext context) {
-//                    return _buildBottomSheet(context);
-//                  });
             },
           )
         ],
@@ -182,114 +178,6 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
-  Widget _buildBottomSheet(BuildContext context) {
-    var deviceSize = MediaQuery.of(context).size;
-    return Container(
-      color: (_isDone) ? _themeColor[0] : _themeColor[1],
-      height: deviceSize.height / 2,
-      child: ListView(
-        children: <Widget>[
-          Container(
-            padding: EdgeInsets.only(left: 14.0, right: 14.0),
-            child: ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
-                child: Container(
-                  color: Colors.white,
-                  child: Column(
-                    children: <Widget>[
-                      SizedBox(
-                        height: 8,
-                      ),
-                      _item('工作', () {
-                        _currentType = 1;
-                        SpUtils.setInt(SpUtils.CURRENT_INDEX, _currentType)
-                            .then((result) {
-                          if (result) {
-                            Toast.toast(context, "修改成功");
-                          }
-                        });
-                        Navigator.of(context).pop();
-                      }),
-                      Divider(),
-                      _item('生活', () {
-                        _currentType = 2;
-                        SpUtils.setInt(SpUtils.CURRENT_INDEX, _currentType)
-                            .then((result) {
-                          if (result) {
-                            Toast.toast(context, "修改成功");
-                          }
-                        });
-                        Navigator.of(context).pop();
-                      }),
-                      Divider(),
-                      _item('娱乐', () {
-                        _currentType = 3;
-                        SpUtils.setInt(SpUtils.CURRENT_INDEX, _currentType)
-                            .then((result) {
-                          if (result) {
-                            Toast.toast(context, "修改成功");
-                          }
-                        });
-                        Navigator.of(context).pop();
-                      }),
-                      Divider(),
-                      _item('全部', () {
-                        _currentType = 0;
-                        SpUtils.setInt(SpUtils.CURRENT_INDEX, _currentType)
-                            .then((result) {
-                          if (result) {
-                            Toast.toast(context, "修改成功");
-                          }
-                        });
-                        Navigator.of(context).pop();
-                      }),
-                      SizedBox(
-                        height: 8,
-                      ),
-                    ],
-                  ),
-                )),
-          ),
-          SizedBox(
-            height: 6,
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: 14.0, right: 14.0),
-            child: FlatButton(
-              color: Colors.white,
-              child: Text(
-                "取消",
-                style: TextStyle(color: Colors.red),
-              ),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0)),
-              onPressed: () {},
-            ),
-          ),
-          SizedBox(
-            height: 6,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _item(String text, ItemOnPressed itemPressed) {
-    return FlatButton(
-      color: Colors.white,
-      highlightColor: Colors.white,
-      child: Text(
-        text,
-        style: TextStyle(
-          color: (_isDone) ? _themeColor[0] : _themeColor[1],
-        ),
-      ),
-      onPressed: () {
-        itemPressed();
-      },
-    );
-  }
-
   void _onItemPress(int type) {
     _currentType = type;
     SpUtils.setInt(SpUtils.CURRENT_INDEX, _currentType).then((result) {
@@ -332,5 +220,9 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
-  void _onAdd() {}
+  void _onAdd() {
+    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
+      return Plan(null);
+    })).then((result) {});
+  }
 }
