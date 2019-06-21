@@ -223,6 +223,12 @@ class _MainPageState extends State<MainPage> {
   void _onAdd() {
     Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
       return Plan(null);
-    })).then((result) {});
+    })).then((result) {
+      setState(() {
+        status = 0;
+        _currentPage = 1;
+      });
+      _refresh();
+    });
   }
 }

@@ -147,5 +147,12 @@ class RequestImpl extends Request {
     return _handleRes(response);
   }
 
+  @override
+  Future<MatterData> addTodo(String title, String content, String date, int type)async {
+    Response response =
+        await _dio.post(Api.addTodo,data: {'title':title,'content':content,'date':date,'type':type});
+    return null;
+  }
+
 
 }

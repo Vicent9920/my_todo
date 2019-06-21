@@ -28,10 +28,15 @@ abstract class Request {
 
   // 获取计划清单
   Future<TodoGroupEntity> getTodoList(
-      bool isFinish, int type, int page, int orderby);
+      bool isFinish, int type, int page, int order);
+
+  // 添加计划
+  Future<MatterData> addTodo(
+      String title,String content,String date,int type );
 
   //删除计划
   Future<Null> deleteMatter(int id);
+
 
   Future<MatterData> updateMatterStatus(int id,bool isFinished);
 }

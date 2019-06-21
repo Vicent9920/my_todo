@@ -1,10 +1,13 @@
 
 DateTime str2Date(String dateStr) {
-  if (dateStr == null || dateStr.length != 8) return null;
+  if(dateStr == '请选择'){
+    return DateTime.now();
+  }
+  if (dateStr == null || dateStr.length != 10) return null;
   try {
     int year = int.parse(dateStr.substring(0, 4));
-    int month = int.parse(dateStr.substring(4, 6));
-    int day = int.parse(dateStr.substring(6));
+    int month = int.parse(dateStr.substring(5, 7));
+    int day = int.parse(dateStr.substring(8,10));
     return DateTime(year, month, day);
   } catch (e) {
     return null;
@@ -13,7 +16,7 @@ DateTime str2Date(String dateStr) {
 // Format date as "yyyymmdddd"
 String formatDate(DateTime date) {
   if (date == null) date = DateTime.now();
-  return "${date.year}${twoDigits(date.month)}${twoDigits(date.day)}";
+  return "${date.year}-${twoDigits(date.month)}-${twoDigits(date.day)}";
 }
 
 String twoDigits(int n) {

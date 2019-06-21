@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_todo/entity/matter_data_entity.dart';
+import 'package:my_todo/net/request.dart';
+import 'package:my_todo/page/widget/toast.dart';
 import 'package:my_todo/util/date_util.dart';
 const double _kPickerSheetHeight = 216.0;
 const double _kPickerItemHeight = 32.0;
@@ -22,12 +24,12 @@ class _Plan extends State<Plan> {
   int _type = 0;
   TextEditingController _titleController = TextEditingController();
   TextEditingController _contentController = TextEditingController();
-  String date;
+  String date = formatDate(DateTime.now());
 
   @override
   void initState() {
-    status = getStatus();
-    date = getDate();
+    status = _getStatus();
+    date = _getDate();
     if (status != 0) {
       _titleController.text = _matterData.title;
       _contentController.text = _matterData.content;
@@ -54,6 +56,7 @@ class _Plan extends State<Plan> {
                 ? IconButton(icon: Icon(Icons.save_alt), onPressed: _save)
                 : null
           ],
+          backgroundColor: (status == 2)?Colors.orange:Colors.green,
         ),
         body: Padding(
           padding: EdgeInsets.fromLTRB(14.0, 14.0, 14.0, 0.0),
@@ -71,6 +74,7 @@ class _Plan extends State<Plan> {
                 maxLengthEnforced: true,
                 enabled: status != 2,
                 textInputAction: TextInputAction.next,
+                controller: _titleController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.grey)),
@@ -79,9 +83,9 @@ class _Plan extends State<Plan> {
                   filled: true,
                   fillColor: Colors.transparent,
                   hintText: '必填',
+                  contentPadding: EdgeInsets.all(6.0)
                 ),
               ),
-              Divider(),
               Text(
                 '计划内容：',
                 style: TextStyle(fontSize: 16, color: Color(0x99000000)),
@@ -91,10 +95,11 @@ class _Plan extends State<Plan> {
               ),
               TextFormField(
                 minLines: 4,
-                maxLength: 240,
-                maxLines: 10,
+                maxLength: 360,
+                maxLines: 20,
                 maxLengthEnforced: true,
                 enabled: status != 2,
+                controller: _contentController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.grey)),
@@ -103,10 +108,10 @@ class _Plan extends State<Plan> {
                   filled: true,
                   fillColor: Colors.transparent,
                   hintText: '必填',
+                    contentPadding: EdgeInsets.all(6.0)
                 ),
               ),
               Divider(),
-              SizedBox(height: 8,),
               Row(
                 children: <Widget>[
                   Text(
@@ -116,7 +121,7 @@ class _Plan extends State<Plan> {
 
                   Expanded(
 
-                    child: Container(
+                    child: GestureDetector(
                       child: Text(
                         date,
                         style: TextStyle(
@@ -125,22 +130,22 @@ class _Plan extends State<Plan> {
                         ),
                         textAlign: TextAlign.end,
                       ),
+                      onTap: (){
+                        _selectDate(context);
+                      },
                     )
                   ),
-                  SizedBox(
-                    width: 12,
-                  ),
-                  GestureDetector(
-                    child: Icon(
+                  IconButton(
+                    icon: Icon(
                       Icons.date_range,
                     ),
-                    onTap: _showDialog,
+                    onPressed: (){
+                      _selectDate(context);
+                    },
                   )
                 ],
               ),
-              SizedBox(height: 8,),
               Divider(),
-              SizedBox(height: 8,),
               Row(
                 children: <Widget>[
                   Text(
@@ -151,27 +156,21 @@ class _Plan extends State<Plan> {
 
                     child: GestureDetector(
                       child: Text(
-                        getType(),
+                        _getType(),
                         style: TextStyle(
                           fontSize: 16,
                         ),
                         textAlign: TextAlign.end,
                       ),
-                      onTap: showPop,
+                      onTap: _showPop,
                     ),
                   ),
-                  SizedBox(
-                    width: 12,
-                  ),
-                  GestureDetector(
-                    child: Container(
-                      child: Icon(Icons.arrow_drop_down),
-                    ),
-                    onTap: showPop,
+                  IconButton(
+                    icon: Icon(Icons.arrow_drop_down),
+                    onPressed: _showPop,
                   )
                 ],
               ),
-              SizedBox(height: 8,),
               Divider(),
               SizedBox(
                 height: 24,
@@ -237,54 +236,44 @@ class _Plan extends State<Plan> {
         ));
   }
 
-  _save() {}
+  _save() {
+
+    if(_titleController.text.trim().isEmpty){
+      return Toast.toast(context, '请填写计划主题');
+    }
+    if(_contentController.text.trim().isEmpty){
+      return Toast.toast(context, '请填写计划内容');
+    }
+    Request().addTodo(_titleController.text, _contentController.text, date, _type).then((result){
+      Toast.toast(context, '保存成功');
+      Navigator.pop(context, result);
+    }).catchError((error){
+      print(error);
+//      Toast.toast(context, '保存失败');
+    });
+  }
 
   _update() {}
 
   _delete() {}
 
-  _showDialog() {
-    if (status != 2) {
-      showCupertinoModalPopup<void>(
+  Future<void> _selectDate(BuildContext context) async {
+    if (status != 2){
+      final DateTime picked = await showDatePicker(
         context: context,
-        builder: (BuildContext context) {
-          return _buildBottomPicker(
-            CupertinoDatePicker(
-              mode: CupertinoDatePickerMode.date,
-              initialDateTime: str2Date(date),
-              onDateTimeChanged: (DateTime newDateTime) {
-                setState(() {
-                  date = formatDate(newDateTime);
-                });
-              },
-            ),
-          );
-        },
-      );
+        initialDate: _initialDate(),
+        firstDate: DateTime.now(),
+        lastDate: DateTime(2050, 4, 15),);
+      if (picked != null && picked != str2Date(date)) {
+        setState(() {
+          date = formatDate(picked);
+        });
+
+      }
     }
+
   }
-  Widget _buildBottomPicker(Widget picker) {
-    return Container(
-      height: _kPickerSheetHeight,
-      padding: const EdgeInsets.only(top: 6.0),
-      color: CupertinoColors.white,
-      child: DefaultTextStyle(
-        style: const TextStyle(
-          color: CupertinoColors.black,
-          fontSize: 22.0,
-        ),
-        child: GestureDetector(
-          // Blocks taps from propagating to the modal sheet and popping.
-          onTap: () {},
-          child: SafeArea(
-            top: false,
-            child: picker,
-          ),
-        ),
-      ),
-    );
-  }
-  showPop() {
+  _showPop() {
     showCupertinoModalPopup(
         context: context,
         builder: (context) {
@@ -333,12 +322,13 @@ class _Plan extends State<Plan> {
   }
 
   _onItemPress(int index) {
-    _type = index;
-    setState(() {});
+    setState(() {
+      _type = index;
+    });
     Navigator.of(context).pop();
   }
 
-  int getStatus() {
+  int _getStatus() {
     if (_matterData == null) {
       return 0;
     } else if (_matterData.completeDateStr == null) {
@@ -359,15 +349,15 @@ class _Plan extends State<Plan> {
     }
   }
 
-  String getDate() {
+  String _getDate() {
     if (status == 0) {
-      return '请选择';
+      return date;
     } else {
       return _matterData.dateStr;
     }
   }
 
-  String getType() {
+  String _getType() {
     switch (_type) {
       case 1:
         return '工作';
@@ -378,6 +368,10 @@ class _Plan extends State<Plan> {
       default:
         return '全部';
     }
+  }
+
+  DateTime _initialDate() {
+    return (date == '请选择')?DateTime.now().add(Duration(days: 1)):str2Date(date);
   }
   
 }
