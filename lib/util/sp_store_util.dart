@@ -45,6 +45,10 @@ class SpUtils {
     return prefs.getString(key);
   }
 
+  static Future<bool> deleteValue(String key) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.remove(key);
+  }
 //  /**
 //   * 待实现序列化
 //   */

@@ -37,6 +37,9 @@ abstract class Request {
   //删除计划
   Future<Null> deleteMatter(int id);
 
+  // 修改计划内容
+  Future<MatterData> updateMatter(MatterData item);
 
+  //修改计划状态
   Future<MatterData> updateMatterStatus(int id,bool isFinished);
 }

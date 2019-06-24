@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_todo/entity/login_dto.dart';
 import 'package:my_todo/net/request.dart';
 import 'package:my_todo/page/widget/psd_field.dart';
+import 'package:my_todo/page/widget/toast.dart';
 import 'package:my_todo/page/widget/user_name_field.dart';
 import 'package:my_todo/util/sp_store_util.dart';
 import 'package:my_todo/util/util.dart';
@@ -126,11 +127,8 @@ class _LoginState extends State<Login> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20.0)),
                 onPressed: () => {
-//                    Navigator.pushReplacement(
-//                    context, MaterialPageRoute(builder: (context) => MainPage()))
                       if (_userNameValid && _psdValid)
                         {
-                          // _userName:weixing9920@163.com  _psd:W904993060X
                           Request().login(_userName, _psd).then((result) {
                             if (result.errorCode != -1) {
                               LoginDTO entity = LoginDTO.fromJson(result.data);
@@ -141,6 +139,9 @@ class _LoginState extends State<Login> {
                                   MaterialPageRoute(
                                       builder: (context) => MainPage()));
                             } else {
+                              if (result.errorMsg == '账号密码不匹配！') {
+                                register(context);
+                              }
                               // TODO 注册
                             }
                           }).catchError((e) {
@@ -169,5 +170,16 @@ class _LoginState extends State<Login> {
         ],
       ),
     ));
+  }
+
+  void register(BuildContext context) {
+    Request().register(_userName, _psd, _psd).then((result) {
+      SpUtils.setString(SpUtils.USER_NAME, result.username);
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => MainPage()));
+    }).catchError((error) {
+      print("登录异常：${error}");
+      Toast.toast(context, "注册失败");
+    });
   }
 }

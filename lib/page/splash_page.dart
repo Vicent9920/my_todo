@@ -48,11 +48,11 @@ class _SplashPage extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-//      decoration: BoxDecoration(
-//          image: DecorationImage(image: AssetImage('res/images/splash.jpg'))),
-      child: Center(
-        child: Text(
+    return Stack(
+      alignment: AlignmentDirectional.center,
+      children: <Widget>[
+        Image(image: AssetImage('res/images/splash.jpg'), fit: BoxFit.fill,),
+        Text(
           login,
           style: TextStyle(
             fontSize: 22,
@@ -61,7 +61,8 @@ class _SplashPage extends State<SplashPage> {
             fontFamily: "Shadows",
           ),
         ),
-      ),
+      ],
+
     );
   }
 }

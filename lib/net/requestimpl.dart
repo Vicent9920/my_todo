@@ -96,9 +96,8 @@ class RequestImpl extends Request {
 
   @override
   Future<Null> logout() async {
-    Response response = await _dio.get(Api.logout);
-    Map<String, dynamic> resJson = json.decode(response.data);
-    BaseDTO base = BaseDTO.fromJson(resJson);
+    var response = await _dio.get(Api.logout);
+    BaseDTO base = BaseDTO.fromJson(response.data);
     return base.data;
   }
 
@@ -125,7 +124,7 @@ class RequestImpl extends Request {
     if (type != 0) {
       map["type"] = type;
     }
-    if(orderby != 4){
+    if (orderby != 4) {
       map["orderby"] = orderby;
     }
     Response response =
@@ -135,24 +134,34 @@ class RequestImpl extends Request {
 
   @override
   Future<Null> deleteMatter(int id) async {
-    Response response =
-    await _dio.post('lg/todo/delete/${id}/json');
+    Response response = await _dio.post('lg/todo/delete/${id}/json');
     return _handleRes(response);
   }
 
   @override
-  Future<MatterData> updateMatterStatus(int id, bool isFinished) async{
-    Response response =
-        await _dio.post('lg/todo/delete/${id}/json',data: {'status':(isFinished)?1:0});
+  Future<MatterData> updateMatterStatus(int id, bool isFinished) async {
+    Response response = await _dio.post('lg/todo/delete/${id}/json',
+        data: {'status': (isFinished) ? 1 : 0});
     return _handleRes(response);
   }
 
   @override
-  Future<MatterData> addTodo(String title, String content, String date, int type)async {
-    Response response =
-        await _dio.post(Api.addTodo,data: {'title':title,'content':content,'date':date,'type':type});
-    return null;
+  Future<MatterData> addTodo(
+      String title, String content, String date, int type) async {
+    Response response = await _dio.post(Api.addTodo,
+        data: {'title': title, 'content': content, 'date': date, 'type': type});
+    return _handleRes(response);
   }
 
-
+  @override
+  Future<MatterData> updateMatter(MatterData item) async {
+    Response response = await _dio.post(Api.addTodo, data: {
+      'id': item.id,
+      'title': item.title,
+      'content': item.content,
+      'date': item.dateStr,
+      'type': item.type
+    });
+    return _handleRes(response);
+  }
 }

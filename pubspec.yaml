@@ -37,6 +37,11 @@ dev_dependencies:
   shared_preferences: ^0.4.3
   # 进度条
   flutter_spinkit: "^3.1.0"
+  # 打开链接
+  url_launcher: ^5.0.3
+  # 应用信息
+  package_info: ^0.4.0+4
+
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
 
@@ -61,6 +66,8 @@ flutter:
     - res/images/ic_finished.png
     - res/images/ic_return.png
     - res/images/ic_screening.png
+    - res/images/ic_launcher_round.png
+    - res/images/ic_launcher_foreground.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

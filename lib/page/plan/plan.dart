@@ -4,8 +4,10 @@ import 'package:my_todo/entity/matter_data_entity.dart';
 import 'package:my_todo/net/request.dart';
 import 'package:my_todo/page/widget/toast.dart';
 import 'package:my_todo/util/date_util.dart';
+
 const double _kPickerSheetHeight = 216.0;
 const double _kPickerItemHeight = 32.0;
+
 class Plan extends StatefulWidget {
   final MatterData matterData;
 
@@ -25,6 +27,7 @@ class _Plan extends State<Plan> {
   TextEditingController _titleController = TextEditingController();
   TextEditingController _contentController = TextEditingController();
   String date = formatDate(DateTime.now());
+  var deviceSize;
 
   @override
   void initState() {
@@ -46,7 +49,7 @@ class _Plan extends State<Plan> {
 
   @override
   Widget build(BuildContext context) {
-    // https://github.com/alibaba/flutter-go IOS 效果页面
+    deviceSize = MediaQuery.of(context).size;
     return Scaffold(
         appBar: AppBar(
           title: Text(_getTitle()),
@@ -54,9 +57,9 @@ class _Plan extends State<Plan> {
           actions: <Widget>[
             (status == 0)
                 ? IconButton(icon: Icon(Icons.save_alt), onPressed: _save)
-                : null
+                : SizedBox()
           ],
-          backgroundColor: (status == 2)?Colors.orange:Colors.green,
+          backgroundColor: (status == 2) ? Colors.orange : Colors.green,
         ),
         body: Padding(
           padding: EdgeInsets.fromLTRB(14.0, 14.0, 14.0, 0.0),
@@ -76,15 +79,14 @@ class _Plan extends State<Plan> {
                 textInputAction: TextInputAction.next,
                 controller: _titleController,
                 decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey)),
-                  focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey)),
-                  filled: true,
-                  fillColor: Colors.transparent,
-                  hintText: '必填',
-                  contentPadding: EdgeInsets.all(6.0)
-                ),
+                    border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey)),
+                    focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey)),
+                    filled: true,
+                    fillColor: Colors.transparent,
+                    hintText: '必填',
+                    contentPadding: EdgeInsets.all(6.0)),
               ),
               Text(
                 '计划内容：',
@@ -101,15 +103,14 @@ class _Plan extends State<Plan> {
                 enabled: status != 2,
                 controller: _contentController,
                 decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey)),
-                  focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey)),
-                  filled: true,
-                  fillColor: Colors.transparent,
-                  hintText: '必填',
-                    contentPadding: EdgeInsets.all(6.0)
-                ),
+                    border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey)),
+                    focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey)),
+                    filled: true,
+                    fillColor: Colors.transparent,
+                    hintText: '必填',
+                    contentPadding: EdgeInsets.all(6.0)),
               ),
               Divider(),
               Row(
@@ -118,29 +119,25 @@ class _Plan extends State<Plan> {
                     '开始时间：',
                     style: TextStyle(fontSize: 16),
                   ),
-
                   Expanded(
-
-                    child: GestureDetector(
-                      child: Text(
-                        date,
-                        style: TextStyle(
+                      child: GestureDetector(
+                    child: Text(
+                      date,
+                      style: TextStyle(
                           fontSize: 16,
-                          decorationStyle: TextDecorationStyle.solid
-                        ),
-                        textAlign: TextAlign.end,
-                      ),
-                      onTap: (){
-                        _selectDate(context);
-                      },
-                    )
-                  ),
+                          decorationStyle: TextDecorationStyle.solid),
+                      textAlign: TextAlign.end,
+                    ),
+                    onTap: () {
+                      _selectDate();
+                    },
+                  )),
                   IconButton(
                     icon: Icon(
                       Icons.date_range,
                     ),
-                    onPressed: (){
-                      _selectDate(context);
+                    onPressed: () {
+                      _selectDate();
                     },
                   )
                 ],
@@ -153,7 +150,6 @@ class _Plan extends State<Plan> {
                     style: TextStyle(fontSize: 16),
                   ),
                   Expanded(
-
                     child: GestureDetector(
                       child: Text(
                         _getType(),
@@ -180,27 +176,52 @@ class _Plan extends State<Plan> {
                 child: Column(
                   children: <Widget>[
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        RaisedButton(
-                          color: Colors.green,
-                          highlightColor: Colors.lightGreen,
-                          colorBrightness: Brightness.dark,
-                          splashColor: Colors.grey,
-                          child: Text("修改计划"),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0)),
-                          onPressed: _update,
+                        Container(
+                          padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
+                          margin: EdgeInsets.only(left: 6.0),
+                          child: RaisedButton(
+                            color: Colors.green,
+                            highlightColor: Colors.lightGreen,
+                            colorBrightness: Brightness.dark,
+                            splashColor: Colors.grey,
+                            child: Text(
+                              "修改计划",
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.0)),
+                            onPressed: _update,
+                          ),
                         ),
-                        RaisedButton(
-                          color: Colors.deepOrange,
-                          highlightColor: Colors.deepOrange,
-                          colorBrightness: Brightness.dark,
-                          splashColor: Colors.grey,
-                          child: Text("删除计划"),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0)),
-                          onPressed: _delete,
+                        Container(
+                          padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
+                          margin: EdgeInsets.only(right: 6.0),
+                          child: RaisedButton(
+                            color: Colors.deepOrange,
+                            highlightColor: Colors.deepOrange,
+                            colorBrightness: Brightness.dark,
+                            splashColor: Colors.grey,
+                            child: Text(
+                              "删除计划",
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.0)),
+                            onPressed: _delete,
+                          ),
                         ),
+//                        RaisedButton(
+//                          color: Colors.deepOrange,
+//                          highlightColor: Colors.deepOrange,
+//                          colorBrightness: Brightness.dark,
+//                          splashColor: Colors.grey,
+//                          child: Text("删除计划"),
+//                          shape: RoundedRectangleBorder(
+//                              borderRadius: BorderRadius.circular(20.0)),
+//                          onPressed: _delete,
+//                        ),
                       ],
                     ),
                     SizedBox(
@@ -210,19 +231,25 @@ class _Plan extends State<Plan> {
                 ),
               ),
               Offstage(
-                offstage: status != 1,
+                offstage: status != 2,
                 child: Column(
                   children: <Widget>[
                     Center(
-                      child: RaisedButton(
-                        color: Colors.deepOrange,
-                        highlightColor: Colors.deepOrange,
-                        colorBrightness: Brightness.dark,
-                        splashColor: Colors.grey,
-                        child: Text("删除计划"),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0)),
-                        onPressed: _delete,
+                      child: Container(
+                        width: deviceSize.width / 2,
+                        child: RaisedButton(
+                          color: Colors.deepOrange,
+                          highlightColor: Colors.deepOrange,
+                          colorBrightness: Brightness.dark,
+                          splashColor: Colors.grey,
+                          child: Text(
+                            "删除计划",
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0)),
+                          onPressed: _delete,
+                        ),
                       ),
                     ),
                     SizedBox(
@@ -237,88 +264,115 @@ class _Plan extends State<Plan> {
   }
 
   _save() {
-
-    if(_titleController.text.trim().isEmpty){
+    if (_titleController.text.trim().isEmpty) {
       return Toast.toast(context, '请填写计划主题');
     }
-    if(_contentController.text.trim().isEmpty){
+    if (_contentController.text.trim().isEmpty) {
       return Toast.toast(context, '请填写计划内容');
     }
-    Request().addTodo(_titleController.text, _contentController.text, date, _type).then((result){
+    Request()
+        .addTodo(_titleController.text, _contentController.text, date, _type)
+        .then((result) {
       Toast.toast(context, '保存成功');
       Navigator.pop(context, result);
-    }).catchError((error){
+    }).catchError((error) {
       print(error);
-//      Toast.toast(context, '保存失败');
     });
   }
 
-  _update() {}
+  _update() {
+    if (_titleController.text == _matterData.title &&
+        _contentController.text == _matterData.content &&
+        date == _matterData.dateStr &&
+        _type == _matterData.type) {
+      Toast.toast(context, '当前内容并无修改，请修改后保存');
+      return;
+    }
+    _matterData.title = _titleController.text;
+    _matterData.content = _contentController.text;
+    _matterData.dateStr = date;
+    _matterData.type = _type;
+    Request().updateMatter(_matterData).then((result) {
+      Toast.toast(context, "修改成功");
+      Navigator.pop(context, true);
+    }).catchError((error) {
+      print(error);
+    });
+  }
 
-  _delete() {}
+  _delete() {
+    Request().deleteMatter(_matterData.id).then((result) {
+      Toast.toast(context, "删除成功");
+      Navigator.pop(context, true);
+    }).catchError((error) {
+      print(error);
+    });
+  }
 
-  Future<void> _selectDate(BuildContext context) async {
-    if (status != 2){
+  Future<void> _selectDate() async {
+    if (status != 2) {
       final DateTime picked = await showDatePicker(
         context: context,
         initialDate: _initialDate(),
         firstDate: DateTime.now(),
-        lastDate: DateTime(2050, 4, 15),);
+        lastDate: DateTime(2050, 4, 15),
+      );
       if (picked != null && picked != str2Date(date)) {
         setState(() {
           date = formatDate(picked);
         });
-
       }
     }
-
   }
+
   _showPop() {
-    showCupertinoModalPopup(
-        context: context,
-        builder: (context) {
-          return CupertinoActionSheet(
-            title: Text(
-              '请选择计划类型',
-              style: TextStyle(fontSize: 20, color: Colors.black),
-            ),
-            cancelButton: CupertinoActionSheetAction(
-              child: Text(
-                '取消',
-                style: TextStyle(color: Colors.red),
+    if (status != 2) {
+      showCupertinoModalPopup(
+          context: context,
+          builder: (context) {
+            return CupertinoActionSheet(
+              title: Text(
+                '请选择计划类型',
+                style: TextStyle(fontSize: 20, color: Colors.black),
               ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            actions: <Widget>[
-              CupertinoActionSheetAction(
-                child: Text('工作'),
+              cancelButton: CupertinoActionSheetAction(
+                child: Text(
+                  '取消',
+                  style: TextStyle(color: Colors.red),
+                ),
                 onPressed: () {
-                  _onItemPress(1);
+                  Navigator.of(context).pop();
                 },
               ),
-              CupertinoActionSheetAction(
-                child: Text('生活'),
-                onPressed: () {
-                  _onItemPress(2);
-                },
-              ),
-              CupertinoActionSheetAction(
-                child: Text('娱乐'),
-                onPressed: () {
-                  _onItemPress(3);
-                },
-              ),
-              CupertinoActionSheetAction(
-                child: Text('全部'),
-                onPressed: () {
-                  _onItemPress(0);
-                },
-              )
-            ],
-          );
-        });
+              actions: <Widget>[
+                CupertinoActionSheetAction(
+                  child: Text('工作'),
+                  onPressed: () {
+                    _onItemPress(1);
+                  },
+                ),
+                CupertinoActionSheetAction(
+                  child: Text('生活'),
+                  onPressed: () {
+                    _onItemPress(2);
+                  },
+                ),
+                CupertinoActionSheetAction(
+                  child: Text('娱乐'),
+                  onPressed: () {
+                    _onItemPress(3);
+                  },
+                ),
+                CupertinoActionSheetAction(
+                  child: Text('全部'),
+                  onPressed: () {
+                    _onItemPress(0);
+                  },
+                )
+              ],
+            );
+          });
+    }
   }
 
   _onItemPress(int index) {
@@ -331,7 +385,7 @@ class _Plan extends State<Plan> {
   int _getStatus() {
     if (_matterData == null) {
       return 0;
-    } else if (_matterData.completeDateStr == null) {
+    } else if (_matterData.completeDate == null) {
       return 1;
     } else {
       return 2;
@@ -371,7 +425,8 @@ class _Plan extends State<Plan> {
   }
 
   DateTime _initialDate() {
-    return (date == '请选择')?DateTime.now().add(Duration(days: 1)):str2Date(date);
+    return (date == '请选择')
+        ? DateTime.now().add(Duration(days: 1))
+        : str2Date(date);
   }
-  
 }

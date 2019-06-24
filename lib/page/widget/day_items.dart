@@ -3,12 +3,16 @@ import 'package:my_todo/entity/matter_data_entity.dart';
 import 'package:my_todo/net/request.dart';
 import 'package:my_todo/page/widget/toast.dart';
 
+typedef ItemClickCallback = void Function(MatterData data);
+
+// ignore: must_be_immutable
 class DayItem extends StatefulWidget {
   final List<MatterData> data;
   final String date;
   final bool isFinished;
+  final ItemClickCallback itemClickListener;
 
-  DayItem(this.data, this.date, this.isFinished);
+  DayItem(this.data, this.date, this.isFinished, this.itemClickListener);
 
   @override
   State<StatefulWidget> createState() => _DayItemState();
@@ -18,13 +22,7 @@ class _DayItemState extends State<DayItem> {
   bool isExpand = true;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    print(widget.date);
     return Card(
       margin: EdgeInsets.all(6),
       color: Colors.white,
@@ -61,7 +59,7 @@ class _DayItemState extends State<DayItem> {
                 Divider(
                   color: Colors.blueGrey,
                 ),
-                (widget.isFinished) ? buildFinishItem() : buildTodoItem(),
+                (widget.isFinished) ? _buildFinishItem() : _buildTodoItem(),
               ],
             ),
           ),
@@ -70,15 +68,18 @@ class _DayItemState extends State<DayItem> {
     );
   }
 
-  Widget buildTodoItem() {
+  Widget _buildTodoItem() {
     return ListView.builder(
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
-          final total = widget.data.length * 2-1;
+          final total = widget.data.length * 2 - 1;
 
           if (index <= total) {
-            if(index == total)return SizedBox(height: 6,);
+            if (index == total)
+              return SizedBox(
+                height: 6,
+              );
             if (index.isOdd)
               return Divider(
                 color: Colors.blueGrey,
@@ -119,11 +120,11 @@ class _DayItemState extends State<DayItem> {
                                       Theme.of(context).textTheme.body1.color),
                             ),
                             onTap: () {
-                              openDetails(item);
+                              widget.itemClickListener(item);
                             },
                           ),
                           Text(
-                            (item.content == null)?'无':item.content,
+                            (item.content == null) ? '无' : item.content,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -138,7 +139,7 @@ class _DayItemState extends State<DayItem> {
                         Icons.delete_forever,
                       ),
                       onTap: () {
-                        delete(item, index);
+                        _delete(item, index);
                       },
                     )
                   ],
@@ -149,14 +150,17 @@ class _DayItemState extends State<DayItem> {
         });
   }
 
-  Widget buildFinishItem() {
+  Widget _buildFinishItem() {
     return ListView.builder(
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
-          final total = widget.data.length * 2-1;
+          final total = widget.data.length * 2 - 1;
           if (index <= total) {
-            if(index == total)return SizedBox(height: 6,);
+            if (index == total)
+              return SizedBox(
+                height: 6,
+              );
             if (index.isOdd)
               return Divider(
                 color: Colors.blueGrey,
@@ -196,7 +200,7 @@ class _DayItemState extends State<DayItem> {
                                 color: Theme.of(context).textTheme.body1.color),
                           ),
                           Text(
-                            (item.content == null)?'无':item.content,
+                            (item.content == null) ? '无' : item.content,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -205,7 +209,9 @@ class _DayItemState extends State<DayItem> {
                           ),
                           RichText(
                             text: TextSpan(text: '', children: <TextSpan>[
-                              TextSpan(text: '完成时间',style: TextStyle(color:Colors.grey)),
+                              TextSpan(
+                                  text: '完成时间',
+                                  style: TextStyle(color: Colors.grey)),
                               TextSpan(text: ' '),
                               TextSpan(
                                   text: item.completeDateStr,
@@ -215,7 +221,7 @@ class _DayItemState extends State<DayItem> {
                         ],
                       ),
                       onTap: () {
-                        openDetails(item);
+                        widget.itemClickListener(item);
                       },
                     )),
                     GestureDetector(
@@ -223,7 +229,7 @@ class _DayItemState extends State<DayItem> {
                         Icons.delete_forever,
                       ),
                       onTap: () {
-                        delete(item, index);
+                        _delete(item, index);
                       },
                     )
                   ],
@@ -246,7 +252,7 @@ class _DayItemState extends State<DayItem> {
     });
   }
 
-  void delete(MatterData item, int index) {
+  void _delete(MatterData item, int index) {
     Request().deleteMatter(item.id).then((result) {
       Toast.toast(context, "删除成功");
       setState(() {
@@ -257,6 +263,4 @@ class _DayItemState extends State<DayItem> {
       Toast.toast(context, "删除失败");
     });
   }
-
-  void openDetails(MatterData item) {}
 }
