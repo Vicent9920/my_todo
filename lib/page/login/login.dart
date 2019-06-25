@@ -142,7 +142,6 @@ class _LoginState extends State<Login> {
                               if (result.errorMsg == '账号密码不匹配！') {
                                 register(context);
                               }
-                              // TODO 注册
                             }
                           }).catchError((e) {
                             print("登录异常：${e.message}");
