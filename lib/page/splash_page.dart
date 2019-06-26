@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:my_todo/net/request.dart';
@@ -15,12 +16,15 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPage extends State<SplashPage> {
   Timer timer;
-  var login = '今日事今日毕！';
+  var textColors = [Colors.green,Colors.blue,Colors.teal,Colors.yellowAccent,Colors.purple,Colors.orange,Colors.red];
+  Color color ;
+  var login = '';
 
   @override
   void initState() {
     super.initState();
-    Request();
+    color = textColors[Random().nextInt(textColors.length)];
+   _getLogin();
     timer = new Timer(const Duration(milliseconds: 5000), () {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => Login()));
@@ -56,7 +60,7 @@ class _SplashPage extends State<SplashPage> {
           login,
           style: TextStyle(
             fontSize: 22,
-            color: Colors.green,
+            color: color,
             decoration: TextDecoration.none,
             fontFamily: "Shadows",
           ),
@@ -64,5 +68,16 @@ class _SplashPage extends State<SplashPage> {
       ],
 
     );
+  }
+  _getLogin(){
+    Request().getPoetry().then((result){
+      if(result.status == 'success'){
+        setState(() {
+          login = result.data.content;
+        });
+      }
+    }).catchError((error){
+      print(error);
+    });
   }
 }

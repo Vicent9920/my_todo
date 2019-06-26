@@ -36,9 +36,15 @@ class _MultiPageFresh extends State<MultiPageFresh> {
   void checkStatus(ScrollEndNotification notification) async {
     double progress =
         notification.metrics.pixels / notification.metrics.maxScrollExtent;
-    print("${(progress * 100).toInt()}%");
-    if ((progress * 100).toInt() == 100) {
-      await widget.onLoadMore();
+
+
+    try {
+      print("${(progress * 100).toInt()}%");
+      if ((progress * 100).toInt() == 100) {
+            await widget.onLoadMore();
+          }
+    } catch (e) {
+      print(e);
     }
   }
 }

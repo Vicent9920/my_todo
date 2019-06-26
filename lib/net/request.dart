@@ -1,6 +1,7 @@
 import 'package:my_todo/entity/base_dto.dart';
 import 'package:my_todo/entity/login_dto.dart';
 import 'package:my_todo/entity/matter_data_entity.dart';
+import 'package:my_todo/entity/poetry_entity.dart';
 import 'package:my_todo/entity/todo_group_entity.dart';
 import 'package:my_todo/net/requestimpl.dart';
 
@@ -42,4 +43,6 @@ abstract class Request {
 
   //修改计划状态
   Future<MatterData> updateMatterStatus(int id,bool isFinished);
+
+  Future<PoetryEntity> getPoetry();
 }

@@ -38,10 +38,11 @@ class _MainPageState extends State<MainPage> {
   bool _loadMoreEnable = true;
   String _userName;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   @override
   void initState() {
     _refresh();
-    SpUtils.getString(SpUtils.USER_NAME).then((result){
+    SpUtils.getString(SpUtils.USER_NAME).then((result) {
       _userName = result;
     });
     super.initState();
@@ -54,9 +55,11 @@ class _MainPageState extends State<MainPage> {
           child: Scaffold(
             key: _scaffoldKey,
             appBar: AppBar(
-              leading: IconButton(icon: Icon(Icons.storage), onPressed: (){
-                _scaffoldKey.currentState.openDrawer();
-              }),
+              leading: IconButton(
+                  icon: Icon(Icons.storage),
+                  onPressed: () {
+                    _scaffoldKey.currentState.openDrawer();
+                  }),
               title: Text("${(_isDone) ? '完成' : '待办'}清单"),
               centerTitle: true,
               actions: <Widget>[
@@ -77,14 +80,15 @@ class _MainPageState extends State<MainPage> {
                           return CupertinoActionSheet(
                             title: Text(
                               '请选择计划类型',
-                              style: TextStyle(fontSize: 20, color: Colors.black),
+                              style:
+                                  TextStyle(fontSize: 20, color: Colors.black),
                             ),
                             cancelButton: CupertinoActionSheetAction(
                               child: Text(
                                 '取消',
                                 style: TextStyle(color: Colors.red),
                               ),
-                              onPressed: () =>  Navigator.of(context).pop(),
+                              onPressed: () => Navigator.of(context).pop(),
                             ),
                             actions: <Widget>[
                               CupertinoActionSheetAction(
@@ -150,121 +154,16 @@ class _MainPageState extends State<MainPage> {
                 ],
               ),
             ),
-            floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerDocked,
             floatingActionButton: FloatingActionButton(
                 backgroundColor: (_isDone) ? _themeColor[0] : _themeColor[1],
                 //悬浮按钮
                 child: Icon(Icons.add),
                 onPressed: _onAdd),
-          ), onWillPop: () => _clickBack(context)),
-
+          ),
+          onWillPop: () => _clickBack(context)),
     );
-//    return Scaffold(
-//      key: _scaffoldKey,
-//      appBar: AppBar(
-//        leading: IconButton(icon: Icon(Icons.storage), onPressed: (){
-//          _scaffoldKey.currentState.openDrawer();
-//        }),
-//        title: Text("${(_isDone) ? '完成' : '待办'}清单"),
-//        centerTitle: true,
-//        actions: <Widget>[
-//          //导航栏右侧菜单
-//          GestureDetector(
-//            child: Container(
-//              margin: EdgeInsets.only(right: 14.0),
-//              child: Image.asset(
-//                'res/images/ic_screening.png',
-//                width: 24,
-//                height: 24,
-//              ),
-//            ),
-//            onTap: () {
-//              showCupertinoModalPopup(
-//                  context: context,
-//                  builder: (context) {
-//                    return CupertinoActionSheet(
-//                      title: Text(
-//                        '请选择计划类型',
-//                        style: TextStyle(fontSize: 20, color: Colors.black),
-//                      ),
-//                      cancelButton: CupertinoActionSheetAction(
-//                        child: Text(
-//                          '取消',
-//                          style: TextStyle(color: Colors.red),
-//                        ),
-//                        onPressed: () =>  Navigator.of(context).pop(),
-//                      ),
-//                      actions: <Widget>[
-//                        CupertinoActionSheetAction(
-//                          child: Text('工作'),
-//                          onPressed: () {
-//                            _onItemPress(1);
-//                          },
-//                        ),
-//                        CupertinoActionSheetAction(
-//                          child: Text('生活'),
-//                          onPressed: () {
-//                            _onItemPress(2);
-//                          },
-//                        ),
-//                        CupertinoActionSheetAction(
-//                          child: Text('娱乐'),
-//                          onPressed: () {
-//                            _onItemPress(3);
-//                          },
-//                        ),
-//                        CupertinoActionSheetAction(
-//                          child: Text('全部'),
-//                          onPressed: () {
-//                            _onItemPress(0);
-//                          },
-//                        )
-//                      ],
-//                    );
-//                  });
-//            },
-//          )
-//        ],
-//        backgroundColor: (_isDone) ? _themeColor[0] : _themeColor[1],
-//      ),
-//      drawer: Builder(builder: (context) => CustomDrawer(_userName)),
-//      body: _buildBody(),
-//      bottomNavigationBar: BottomAppBar(
-//        color: Colors.white,
-//        shape: CircularNotchedRectangle(),
-//        child: Row(
-//          //均分底部导航栏横向空间
-//          mainAxisAlignment: MainAxisAlignment.spaceAround,
-//          children: <Widget>[
-//            IconButton(
-//              icon: Icon(
-//                Icons.border_color,
-//                color: (_isDone == false) ? _themeColor[1] : Colors.grey,
-//              ),
-//              onPressed: () {
-//                _changeStatus(true);
-//              },
-//            ),
-//            SizedBox(), //中间位置空出
-//            IconButton(
-//              icon: Icon(
-//                Icons.done_outline,
-//                color: (_isDone == true) ? _themeColor[0] : Colors.grey,
-//              ),
-//              onPressed: () {
-//                _changeStatus(false);
-//              },
-//            ),
-//          ],
-//        ),
-//      ),
-//      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-//      floatingActionButton: FloatingActionButton(
-//          backgroundColor: (_isDone) ? _themeColor[0] : _themeColor[1],
-//          //悬浮按钮
-//          child: Icon(Icons.add),
-//          onPressed: _onAdd),
-//    );
   }
 
   void _changeStatus(bool current) {
@@ -277,10 +176,6 @@ class _MainPageState extends State<MainPage> {
       _refresh();
     }
   }
-
-
-
-
 
   // ignore: missing_return
   Widget _buildBody() {
@@ -328,6 +223,13 @@ class _MainPageState extends State<MainPage> {
                   });
                   _refresh();
                 }
+              });
+            }, (date) {
+              _list.removeWhere((bean){
+                return bean.dateStr == date;
+              });
+              setState(() {
+                status = (_list.length > 0) ? 1 : 2;
               });
             });
           }
