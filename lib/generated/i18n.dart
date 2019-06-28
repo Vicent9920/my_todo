@@ -19,10 +19,93 @@ class S implements WidgetsLocalizations {
   @override
   TextDirection get textDirection => TextDirection.ltr;
 
+  String get action_cancel => "Cancel";
+  String get action_copy_success => "Copy Success";
+  String get action_font_size => "Font Size";
+  String get action_load_error => "Load Error";
+  String get action_loading => "Loading";
+  String get action_not_starred => "Not Starred";
+  String get action_ok => "OK";
+  String get action_setting => "Setting";
+  String get action_share => "Share";
+  String get action_starred => "Starred";
+  String get action_starred_list => "Starred List";
+  String get action_theme => "Theme";
+  String get author => "author";
+  String get content_load_error => "Load error, click to reload.";
+  String get content_not_starred => "No articles have been starred yet.";
+  String get copy_content => "Copy Content";
+  String get day_after => "Day After";
+  String get day_before => "Day Before";
+  String get random => "Random";
+  String get select_color_dialog_title => "Please select the theme color";
+  String get select_date => "Select Date";
+  String get title_clear_starred => "Are you sure to clear all starred articles?";
+  String get today => "Today";
+  String get word_count => "word count";
+  String get yesterday => "Yesterday";
 }
 
 class $en extends S {
   const $en();
+}
+
+class $zh extends S {
+  const $zh();
+
+  @override
+  TextDirection get textDirection => TextDirection.ltr;
+
+  @override
+  String get select_date => "选择日期";
+  @override
+  String get action_not_starred => "未收藏";
+  @override
+  String get action_starred => "已收藏";
+  @override
+  String get yesterday => "昨天";
+  @override
+  String get select_color_dialog_title => "请选择主题颜色";
+  @override
+  String get random => "随机";
+  @override
+  String get word_count => "字数";
+  @override
+  String get action_loading => "加载中";
+  @override
+  String get action_copy_success => "复制成功";
+  @override
+  String get action_cancel => "取消";
+  @override
+  String get action_ok => "确定";
+  @override
+  String get content_load_error => "加载失败，点击重试。";
+  @override
+  String get today => "今天";
+  @override
+  String get action_theme => "主题";
+  @override
+  String get action_share => "分享";
+  @override
+  String get author => "作者";
+  @override
+  String get action_setting => "设置";
+  @override
+  String get title_clear_starred => "确定要清空所有收藏吗？";
+  @override
+  String get action_load_error => "加载失败";
+  @override
+  String get content_not_starred => "还没有收藏任何文章";
+  @override
+  String get copy_content => "复制";
+  @override
+  String get day_before => "前一天";
+  @override
+  String get action_font_size => "字号";
+  @override
+  String get action_starred_list => "收藏列表";
+  @override
+  String get day_after => "后一天";
 }
 
 class GeneratedLocalizationsDelegate extends LocalizationsDelegate<S> {
@@ -31,6 +114,7 @@ class GeneratedLocalizationsDelegate extends LocalizationsDelegate<S> {
   List<Locale> get supportedLocales {
     return const <Locale>[
       Locale("en", ""),
+      Locale("zh", ""),
     ];
   }
 
@@ -57,6 +141,8 @@ class GeneratedLocalizationsDelegate extends LocalizationsDelegate<S> {
       switch (lang) {
         case "en":
           return SynchronousFuture<S>(const $en());
+        case "zh":
+          return SynchronousFuture<S>(const $zh());
         default:
           // NO-OP.
       }
