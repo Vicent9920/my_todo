@@ -1,9 +1,9 @@
-#todo
+# todo
 
 
 
 <p align="center">
-  <img src="http://ps0his7tm.bkt.clouddn.com/Fg99drUfaNguWM02QMe865jOThPH" alt="">
+  <img src="./res/images/todo.png" alt="">
 </p>
 <p align="center">
   <a href="https://github.com/Vicent9920/my_todo/releases">
@@ -32,15 +32,15 @@
 
 ### 截图
 
-![](./res/screenshots/screenshot-01.png)
-![](./res/screenshots/screenshot-02.png)
-![](./res/screenshots/screenshot-03.png)
-![](./res/screenshots/screenshot-04.png)
-![](./res/screenshots/screenshot-05.png)
-![](./res/screenshots/screenshot-06.png)
-![](./res/screenshots/screenshot-07.png)
-![](./res/screenshots/screenshot-08.png)
-![](./res/screenshots/screenshot-09.png)
-![](./res/screenshots/screenshot-10.png)
-![](./res/screenshots/screenshot-11.png)
-![](./res/screenshots/screenshot-12.png)
+![](./res/screenshots/screenshot-01.jpg)
+![](./res/screenshots/screenshot-02.jpg)
+![](./res/screenshots/screenshot-03.jpg)
+![](./res/screenshots/screenshot-04.jpg)
+![](./res/screenshots/screenshot-05.jpg)
+![](./res/screenshots/screenshot-06.jpg)
+![](./res/screenshots/screenshot-07.jpg)
+![](./res/screenshots/screenshot-08.jpg)
+![](./res/screenshots/screenshot-09.jpg)
+![](./res/screenshots/screenshot-10.jpg)
+![](./res/screenshots/screenshot-11.jpg)
+![](./res/screenshots/screenshot-12.jpg)
