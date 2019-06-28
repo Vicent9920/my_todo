@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_todo/entity/matter_data_entity.dart';
 import 'package:my_todo/net/request.dart';
+import 'package:my_todo/page/login/login.dart';
 import 'package:my_todo/page/plan/plan.dart';
+import 'package:my_todo/page/widget/build_list.dart';
 import 'package:my_todo/page/widget/custom_drawer.dart';
 import 'package:my_todo/page/widget/day_items.dart';
 import 'package:my_todo/page/widget/loading.dart';
@@ -48,113 +50,119 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(
-        leading: IconButton(
-            icon: Icon(Icons.storage),
-            onPressed: () {
-              _scaffoldKey.currentState.openDrawer();
-            }),
-        title: Text("${(_isDone) ? '完成' : '待办'}清单"),
-        centerTitle: true,
-        actions: <Widget>[
-          //导航栏右侧菜单
-          GestureDetector(
-            child: Container(
-              margin: EdgeInsets.only(right: 14.0),
-              child: Image.asset(
-                'res/images/ic_screening.png',
-                width: 24,
-                height: 24,
+    return MaterialApp(
+      home: WillPopScope(
+          child: Scaffold(
+            key: _scaffoldKey,
+            appBar: AppBar(
+              leading: IconButton(
+                  icon: Icon(Icons.storage),
+                  onPressed: () {
+                    _scaffoldKey.currentState.openDrawer();
+                  }),
+              title: Text("${(_isDone) ? '完成' : '待办'}清单"),
+              centerTitle: true,
+              actions: <Widget>[
+                //导航栏右侧菜单
+                GestureDetector(
+                  child: Container(
+                    margin: EdgeInsets.only(right: 14.0),
+                    child: Image.asset(
+                      'res/images/ic_screening.png',
+                      width: 24,
+                      height: 24,
+                    ),
+                  ),
+                  onTap: () {
+                    showCupertinoModalPopup(
+                        context: context,
+                        builder: (context) {
+                          return CupertinoActionSheet(
+                            title: Text(
+                              '请选择计划类型',
+                              style:
+                                  TextStyle(fontSize: 20, color: Colors.black),
+                            ),
+                            cancelButton: CupertinoActionSheetAction(
+                              child: Text(
+                                '取消',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                              onPressed: () => Navigator.of(context).pop(),
+                            ),
+                            actions: <Widget>[
+                              CupertinoActionSheetAction(
+                                child: Text('工作'),
+                                onPressed: () {
+                                  _onItemPress(1);
+                                },
+                              ),
+                              CupertinoActionSheetAction(
+                                child: Text('生活'),
+                                onPressed: () {
+                                  _onItemPress(2);
+                                },
+                              ),
+                              CupertinoActionSheetAction(
+                                child: Text('娱乐'),
+                                onPressed: () {
+                                  _onItemPress(3);
+                                },
+                              ),
+                              CupertinoActionSheetAction(
+                                child: Text('全部'),
+                                onPressed: () {
+                                  _onItemPress(0);
+                                },
+                              )
+                            ],
+                          );
+                        });
+                  },
+                )
+              ],
+              backgroundColor: (_isDone) ? _themeColor[0] : _themeColor[1],
+            ),
+            drawer: Builder(builder: (context) => CustomDrawer(_userName)),
+            body: _buildBody(),
+            bottomNavigationBar: BottomAppBar(
+              color: Colors.white,
+              shape: CircularNotchedRectangle(),
+              child: Row(
+                //均分底部导航栏横向空间
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  IconButton(
+                    icon: Icon(
+                      Icons.border_color,
+                      color: (_isDone == false) ? _themeColor[1] : Colors.grey,
+                    ),
+                    onPressed: () {
+                      _changeStatus(true);
+                    },
+                  ),
+                  SizedBox(), //中间位置空出
+                  IconButton(
+                    icon: Icon(
+                      Icons.done_outline,
+                      color: (_isDone == true) ? _themeColor[0] : Colors.grey,
+                    ),
+                    onPressed: () {
+                      _changeStatus(false);
+                    },
+                  ),
+                ],
               ),
             ),
-            onTap: () {
-              showCupertinoModalPopup(
-                  context: context,
-                  builder: (context) {
-                    return CupertinoActionSheet(
-                      title: Text(
-                        '请选择计划类型',
-                        style: TextStyle(fontSize: 20, color: Colors.black),
-                      ),
-                      cancelButton: CupertinoActionSheetAction(
-                        child: Text(
-                          '取消',
-                          style: TextStyle(color: Colors.red),
-                        ),
-                        onPressed: () => Navigator.of(context).pop(),
-                      ),
-                      actions: <Widget>[
-                        CupertinoActionSheetAction(
-                          child: Text('工作'),
-                          onPressed: () {
-                            _onItemPress(1);
-                          },
-                        ),
-                        CupertinoActionSheetAction(
-                          child: Text('生活'),
-                          onPressed: () {
-                            _onItemPress(2);
-                          },
-                        ),
-                        CupertinoActionSheetAction(
-                          child: Text('娱乐'),
-                          onPressed: () {
-                            _onItemPress(3);
-                          },
-                        ),
-                        CupertinoActionSheetAction(
-                          child: Text('全部'),
-                          onPressed: () {
-                            _onItemPress(0);
-                          },
-                        )
-                      ],
-                    );
-                  });
-            },
-          )
-        ],
-        backgroundColor: (_isDone) ? _themeColor[0] : _themeColor[1],
-      ),
-      drawer: Builder(builder: (context) => CustomDrawer(_userName)),
-      body: _buildBody(),
-      bottomNavigationBar: BottomAppBar(
-        color: Colors.white,
-        shape: CircularNotchedRectangle(),
-        child: Row(
-          //均分底部导航栏横向空间
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            IconButton(
-              icon: Icon(
-                Icons.border_color,
-                color: (_isDone == false) ? _themeColor[1] : Colors.grey,
-              ),
-              onPressed: () {
-                _changeStatus(true);
-              },
-            ),
-            SizedBox(), //中间位置空出
-            IconButton(
-              icon: Icon(
-                Icons.done_outline,
-                color: (_isDone == true) ? _themeColor[0] : Colors.grey,
-              ),
-              onPressed: () {
-                _changeStatus(false);
-              },
-            ),
-          ],
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
-          backgroundColor: (_isDone) ? _themeColor[0] : _themeColor[1],
-          //悬浮按钮
-          child: Icon(Icons.add),
-          onPressed: _onAdd),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerDocked,
+            floatingActionButton: FloatingActionButton(
+                backgroundColor: (_isDone) ? _themeColor[0] : _themeColor[1],
+                //悬浮按钮
+                child: Icon(Icons.add),
+                onPressed: _onAdd),
+          ),
+          onWillPop: () => _clickBack(context)),
     );
   }
 
@@ -216,6 +224,13 @@ class _MainPageState extends State<MainPage> {
                   _refresh();
                 }
               });
+            }, (date) {
+              _list.removeWhere((bean){
+                return bean.dateStr == date;
+              });
+              setState(() {
+                status = (_list.length > 0) ? 1 : 2;
+              });
             });
           }
         });
@@ -275,5 +290,18 @@ class _MainPageState extends State<MainPage> {
         _refresh();
       }
     });
+  }
+
+  var last = 0;
+
+  Future<bool> _clickBack(BuildContext context) {
+    int now = DateTime.now().millisecondsSinceEpoch;
+    if (now - last > 1000) {
+      last = DateTime.now().millisecondsSinceEpoch;
+      Toast.toast(context, '再按一次退出');
+      return Future.value(false);
+    } else {
+      return Future.value(true);
+    }
   }
 }

@@ -6,6 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:my_todo/entity/base_dto.dart';
 import 'package:my_todo/entity/login_dto.dart';
 import 'package:my_todo/entity/matter_data_entity.dart';
+import 'package:my_todo/entity/poetry_entity.dart';
 import 'package:my_todo/entity/todo_group_entity.dart';
 import 'package:my_todo/net/api.dart';
 import 'package:my_todo/net/request.dart';
@@ -140,9 +141,9 @@ class RequestImpl extends Request {
 
   @override
   Future<MatterData> updateMatterStatus(int id, bool isFinished) async {
-    Response response = await _dio.post('lg/todo/delete/${id}/json',
-        data: {'status': (isFinished) ? 1 : 0});
-    return _handleRes(response);
+    Response response = await _dio.post('lg/todo/done/${id}/json',
+        data: FormData.from({'status': (isFinished) ? 1 : 0}));
+    return MatterData.fromJson( _handleRes(response));
   }
 
   @override
@@ -150,7 +151,7 @@ class RequestImpl extends Request {
       String title, String content, String date, int type) async {
     Response response = await _dio.post(Api.addTodo,
         data: {'title': title, 'content': content, 'date': date, 'type': type});
-    return _handleRes(response);
+    return MatterData.fromJson( _handleRes(response));
   }
 
   @override
@@ -162,6 +163,12 @@ class RequestImpl extends Request {
       'date': item.dateStr,
       'type': item.type
     });
-    return _handleRes(response);
+    return MatterData.fromJson( _handleRes(response));
+  }
+
+  @override
+  Future<PoetryEntity> getPoetry() async{
+    Response response = await _dio.get('https://v2.jinrishici.com/one.json');
+    return PoetryEntity.fromJson(response.data);
   }
 }

@@ -178,7 +178,7 @@ class _LoginState extends State<Login> {
           context, MaterialPageRoute(builder: (context) => MainPage()));
     }).catchError((error) {
       print("登录异常：${error}");
-      Toast.toast(context, "注册失败");
+      Toast.toast(context, "登录失败");
     });
   }
 }

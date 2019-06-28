@@ -1,9 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_todo/entity/matter_data_entity.dart';
 import 'package:my_todo/net/request.dart';
 import 'package:my_todo/page/widget/toast.dart';
 
 typedef ItemClickCallback = void Function(MatterData data);
+typedef DeleteClickCallback = void Function(String date);
 
 // ignore: must_be_immutable
 class DayItem extends StatefulWidget {
@@ -11,8 +13,9 @@ class DayItem extends StatefulWidget {
   final String date;
   final bool isFinished;
   final ItemClickCallback itemClickListener;
+  final DeleteClickCallback deleteClickCallback;
 
-  DayItem(this.data, this.date, this.isFinished, this.itemClickListener);
+  DayItem(this.data, this.date, this.isFinished, this.itemClickListener,this.deleteClickCallback);
 
   @override
   State<StatefulWidget> createState() => _DayItemState();
@@ -244,7 +247,7 @@ class _DayItemState extends State<DayItem> {
     Request().updateMatterStatus(item.id, isFinish).then((result) {
       Toast.toast(context, "更新成功");
       setState(() {
-        widget.data.removeAt(index);
+        widget.data.remove(item);
       });
     }).catchError((error) {
       print(error);
@@ -252,15 +255,40 @@ class _DayItemState extends State<DayItem> {
     });
   }
 
-  void _delete(MatterData item, int index) {
-    Request().deleteMatter(item.id).then((result) {
-      Toast.toast(context, "删除成功");
-      setState(() {
-        widget.data.removeAt(index);
-      });
-    }).catchError((error) {
-      print(error);
-      Toast.toast(context, "删除失败");
-    });
+  void _delete(MatterData item, int index) async {
+    return showCupertinoDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return CupertinoAlertDialog(
+            title: Text('提示'),
+            content: Text('是否确认删除？\n删除后不可恢复！'),
+            actions: <Widget>[
+              new CupertinoButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('取消')),
+              new CupertinoButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Request().deleteMatter(item.id).then((result) {
+
+                      if(index == 0 && widget.data.length == 1){
+                        widget.deleteClickCallback(widget.date);
+                        return;
+                      }
+                      setState(() {
+                        widget.data.removeAt(index);
+                      });
+                      Toast.toast(context, "删除成功");
+                    }).catchError((error) {
+                      print(error);
+                      Toast.toast(context, "删除失败");
+                    });
+                  },
+                  child: Text('确认')),
+            ],
+          );
+        });
   }
 }

@@ -26,8 +26,12 @@ class MyApp extends StatelessWidget {
       ],
       supportedLocales: S.delegate.supportedLocales,
 
+   
+
+
       home: WillPopScope(
           child: SplashPage(), onWillPop: () => _clickBack(context)),
+
     );
   }
 
